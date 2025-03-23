@@ -43,7 +43,7 @@ def subirVideo(video_path, titulo, desc):
                 "categoryId": "22",
             },
             "status": {
-                "privacyStatus": "public",
+                "privacyStatus": "private",
             },
         },
         media_body=MediaFileUpload(video_path, chunksize=-1, resumable=True),

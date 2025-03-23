@@ -5,6 +5,7 @@ from bot import subirVideo, editar
 from PIL import Image, ImageTk
 import os
 from win10toast import ToastNotifier
+import threading
 
 videos = []
 
@@ -27,33 +28,41 @@ def seleccionar_archivo():
         labelVideos.config(text=f"Selección: {titulo1}, {titulo2}",fg="green")
 
 
+def proceso():
+    try:
+        titulo = entradaTitulo.get()
+        desc = entradaDescripcion.get("1.0", "end-1c")
+
+        if not titulo or not desc or len(videos) != 2:
+            messagebox.showerror("Error", "Campos incompletos")
+            return
+
+        labelVideos.config(text="Procesando video...", fg="blue")
+
+        # Ejecutar la edición
+        video = editar(titulo, videos[0], videos[1])
+
+        # Subir el video
+        subirVideo(video, titulo, desc)
+
+        # Notificación en Windows
+        toaster = ToastNotifier()
+        toaster.show_toast("Completado", "¡Video subido a la plataforma!", duration=10)
+
+        labelVideos.config(text="¡Proceso completado!", fg="green")
+        
+    except Exception as e:
+        labelVideos.config(text="Error en el proceso", fg="red")
+        messagebox.showerror("Error", f"Ocurrió un error: {str(e)}")
+
 def inicio():
     """ Parametros """
-    titulo = entradaTitulo.get()
-    desc = entradaDescripcion.get("1.0", "end-1c")
-    video1 = videos[0]
-    video2 = videos[1]
-    
-    if(titulo == "" or desc == "" or videos is None):
-        print("Falta llenar un campo")
-        messagebox.showerror("Error","Campos incompletos")
-        return
-        
-    video = editar(titulo, video1, video2)
-    subirVideo(video,titulo, desc)
-    
-    toaster = ToastNotifier()
-    toaster.show_toast("Completado", "¡Video subido a la plataforma!", duration=5)
+    hilo = threading.Thread(target=proceso)
+    hilo.daemon = True  # Permite que el hilo termine cuando se cierre la app
+    hilo.start()
 
-    
-def obtener_entradas():
-    # Obtener el texto de las entradas
-    
-    print(f"Descripción: {desc}")
-
-# Crear ventana
 root = tk.Tk()
-root.title("Granja-Bot-YT")
+root.title("Bot - YT")
 root.geometry("400x430")
 
 labelTitulo = tk.Label(root, text="Titulo del video").pack()

@@ -1,11 +1,12 @@
 import tkinter as tk
+import os
+import threading
 from tkinter import filedialog
 from tkinter import messagebox
 from bot import subirVideo, editar
 from PIL import Image, ImageTk
-import os
 from win10toast import ToastNotifier
-import threading
+from time import sleep
 
 videos = []
 
@@ -38,25 +39,32 @@ def proceso():
             return
 
         labelVideos.config(text="Procesando video...", fg="blue")
-
-        # Ejecutar la edición
+        
         video = editar(titulo, videos[0], videos[1])
-
-        # Subir el video
         subirVideo(video, titulo, desc)
+        
+        labelVideos.config(text="Subiendo video...", fg="blue")
 
-        # Notificación en Windows
+        """
+        Notificamos con el popup de Windows
+        """
         toaster = ToastNotifier()
-        toaster.show_toast("Completado", "¡Video subido a la plataforma!", duration=10)
+        toaster.show_toast("Completado", "¡Video subido a la plataforma!", duration=15)
 
         labelVideos.config(text="¡Proceso completado!", fg="green")
+        
+        sleep(2)
+        # Eliminar los videos No queremos dejar rastro oh yeah!
+        os.remove(videos[0])
+        os.remove(videos[1])
+        os.remove(video)
         
     except Exception as e:
         labelVideos.config(text="Error en el proceso", fg="red")
         messagebox.showerror("Error", f"Ocurrió un error: {str(e)}")
 
 def inicio():
-    """ Parametros """
+    """ Esta parte ayuda a la ejecución en hilos para no detener la interfaz """
     hilo = threading.Thread(target=proceso)
     hilo.daemon = True  # Permite que el hilo termine cuando se cierre la app
     hilo.start()

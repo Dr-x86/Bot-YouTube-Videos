@@ -1,5 +1,5 @@
 import os
-import pickle  # Para guardar y cargar credenciales
+import pickle
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build

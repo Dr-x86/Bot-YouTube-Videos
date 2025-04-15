@@ -39,14 +39,14 @@ def editar(titulo, videoArriba, videoAbajo="BG.mp4"):
     video = clips_array(array).resize((1080, 1920))
 
     # Guardar el video final
-    video.write_videofile(f"{titulo}F.mp4", codec="libx264", threads=4, bitrate="3000k", preset="fast")
+    video.write_videofile(f"{titulo}Final.mp4", codec="libx264", threads=4, bitrate="3000k", preset="fast")
 
     # Eliminar los videos No queremos dejar rastro oh yeah!
     os.remove(videoArribaConvertido)
     os.remove(videoAbajoConvertido)
     os.remove(videoAbajo)
     
-    return f"{titulo}F.mp4"
+    return f"{titulo}Final.mp4"
 
 def convertir_video(video_entrada, video_salida, duracion):
     """ Recorta y lo convierte a un formato compatible. psdt: Gracias ChatGPT!! """

@@ -13,20 +13,18 @@ def get_authenticated_service():
 
     # Si ya existe un token guardado, lo cargamos
     if os.path.exists("token.pickle"):
+        print("CREDENCIALES FUNCIONAN")
         with open("token.pickle", "rb") as token_file:
             credentials = pickle.load(token_file)
-
-    # Si no hay credenciales válidas, autenticamos
-    if not credentials or not credentials.valid:
-        if credentials and credentials.expired and credentials.refresh_token:
-            credentials.refresh(Request())  # Renovar token si ha expirado
-        else:
+    else:
+        # Si no hay credenciales válidas, autenticamos
+        if credentials or credentials.expired or credentials.refresh_token:
+            print("CREDENCIALES NO VALIDAS RE-SOLICITANDO (...)")
             flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
             credentials = flow.run_local_server(port=8080)  # Autenticación manual la primera vez
-
-        # Guardamos las credenciales en un archivo para futuras ejecuciones
-        with open("token.pickle", "wb") as token_file:
-            pickle.dump(credentials, token_file)
+            # Guardamos las credenciales en un archivo para futuras ejecuciones
+            with open("token.pickle", "wb") as token_file:
+                pickle.dump(credentials, token_file)
 
     return build("youtube", "v3", credentials=credentials)
     
